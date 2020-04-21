@@ -1,0 +1,6 @@
+packages:
+- .
+resolver: lts-14.27 # GHC 8.6.5 last package set
+extra-deps:
+  - lens-family-2.0.0
+  - lens-family-core-2.0.0
