@@ -23,7 +23,8 @@ enum TypeNamesForJets {
   word64,
   word128,
   word256,
-  word512,
+  word512, ge = word512,
+  word1024,
   pubkey,
   sTwo,
   outpnt,
@@ -37,6 +38,7 @@ enum TypeNamesForJets {
   sWord256,
   sSWord256,
   sWord32,
+  sWord512,
   word2TimesWord256,
   twoPlusWord4,
   word2TimesWord256PlusTwoPlusWord4,
@@ -44,7 +46,19 @@ enum TypeNamesForJets {
   sSWord2TimesWord256PlusTwoPlusWord4,
   twoTimesWord32,
   twoTimesWord64,
-  word256TimesWord512,
+  twoTimesWord256, point = twoTimesWord256,
+  word256TimesWord512, scalarTimesGe = word256TimesWord512,
+  word512TimesWord256, gej = word512TimesWord256,
+  scalarTimesPoint,
+  gejTimesFe,
+  gejTimesGe,
+  feTimesGej, scalarTimesGej = feTimesGej,
+  gejTimesGej,
+  scalarTimesPointTimesScalar,
+  scalarTimesGeTimesScalar,
+  scalarTimesGejTimesScalar,
+  scalarTimesPointTimesScalarTimesPoint,
+  scalarTimesGeTimesScalarTimesGe,
   NumberOfTypeNames
 };
 
@@ -93,6 +107,8 @@ size_t mallocBoundVars(unification_var** bound_var, size_t* word256_ix, size_t* 
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word128], &(*bound_var)[word128] } } };
   (*bound_var)[word512] = (unification_var){ .isBound = true,
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word256], &(*bound_var)[word256] } } };
+  (*bound_var)[word1024] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word512], &(*bound_var)[word512] } } };
   (*bound_var)[pubkey] = (unification_var){ .isBound = true,
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[two], &(*bound_var)[word256] } } };
   (*bound_var)[sTwo] = (unification_var){ .isBound = true,
@@ -119,6 +135,8 @@ size_t mallocBoundVars(unification_var** bound_var, size_t* word256_ix, size_t* 
       .bound = { .kind = SUM,     .arg = { &(*bound_var)[one], &(*bound_var)[sWord256] } } };
   (*bound_var)[sWord32] = (unification_var){ .isBound = true,
       .bound = { .kind = SUM,     .arg = { &(*bound_var)[one], &(*bound_var)[word32] } } };
+  (*bound_var)[sWord512] = (unification_var){ .isBound = true,
+      .bound = { .kind = SUM,     .arg = { &(*bound_var)[one], &(*bound_var)[word512] } } };
   (*bound_var)[word2TimesWord256] = (unification_var){ .isBound = true,
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word2], &(*bound_var)[word256] } } };
   (*bound_var)[twoPlusWord4] = (unification_var){ .isBound = true,
@@ -133,8 +151,32 @@ size_t mallocBoundVars(unification_var** bound_var, size_t* word256_ix, size_t* 
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[two], &(*bound_var)[word32] } } };
   (*bound_var)[twoTimesWord64] = (unification_var){ .isBound = true,
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[two], &(*bound_var)[word64] } } };
+  (*bound_var)[twoTimesWord256] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[two], &(*bound_var)[word256] } } };
   (*bound_var)[word256TimesWord512] = (unification_var){ .isBound = true,
       .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word256], &(*bound_var)[word512] } } };
+  (*bound_var)[word512TimesWord256] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word512], &(*bound_var)[word256] } } };
+  (*bound_var)[scalarTimesPoint] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word256], &(*bound_var)[point] } } };
+  (*bound_var)[gejTimesFe] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[gej], &(*bound_var)[word256] } } };
+  (*bound_var)[gejTimesGe] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[gej], &(*bound_var)[ge] } } };
+  (*bound_var)[feTimesGej] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[word256], &(*bound_var)[gej] } } };
+  (*bound_var)[gejTimesGej] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[gej], &(*bound_var)[gej] } } };
+  (*bound_var)[scalarTimesPointTimesScalar] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[scalarTimesPoint], &(*bound_var)[word256] } } };
+  (*bound_var)[scalarTimesGeTimesScalar] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[scalarTimesGe], &(*bound_var)[word256] } } };
+  (*bound_var)[scalarTimesGejTimesScalar] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[scalarTimesGej], &(*bound_var)[word256] } } };
+  (*bound_var)[scalarTimesPointTimesScalarTimesPoint] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[scalarTimesPointTimesScalar], &(*bound_var)[point] } } };
+  (*bound_var)[scalarTimesGeTimesScalarTimesGe] = (unification_var){ .isBound = true,
+      .bound = { .kind = PRODUCT, .arg = { &(*bound_var)[scalarTimesGeTimesScalar], &(*bound_var)[ge] } } };
 
   *word256_ix = word256;
   *extra_var_start = NumberOfTypeNames;
@@ -145,13 +187,56 @@ size_t mallocBoundVars(unification_var** bound_var, size_t* word256_ix, size_t* 
 
 /* An enumeration of the names of Elements specific jets and primitives. */
 typedef enum jetName
-{ ADDER32
-, SUBTRACTOR32
-, MULTIPLIER32
-, FULLADDER32
-, FULLSUBTRACTOR32
-, FULLMULTIPLIER32
-, SHA256_HASHBLOCK
+{ ADD_32
+, SUBTRACT_32
+, MULTIPLY_32
+, FULL_ADD_32
+, FULL_SUBTRACT_32
+, FULL_MULTIPLY_32
+, SHA_256_BLOCK
+, SHA_256_HASHBLOCK
+
+, FE_NORMALIZE
+, FE_NEGATE
+, FE_ADD
+, FE_SQUARE
+, FE_MULTIPLY
+, FE_MULTIPLY_BETA
+, FE_INVERT
+, FE_SQUARE_ROOT
+, FE_IS_ZERO
+, FE_IS_ODD
+, SCALAR_NORMALIZE
+, SCALAR_NEGATE
+, SCALAR_ADD
+, SCALAR_SQUARE
+, SCALAR_MULTIPLY
+, SCALAR_MULTIPLY_LAMBDA
+, SCALAR_INVERT
+, SCALAR_IS_ZERO
+, GEJ_INFINITY
+, GEJ_NORMALIZE
+, GEJ_NEGATE
+, GE_NEGATE
+, GEJ_DOUBLE
+, GEJ_ADD
+, GEJ_GE_ADD_EX
+, GEJ_GE_ADD
+, GEJ_RESCALE
+, GEJ_IS_INFINITY
+, GEJ_X_EQUIV
+, GEJ_Y_IS_ODD
+, GEJ_IS_ON_CURVE
+, GE_IS_ON_CURVE
+, GENERATE
+, SCALE
+, LINEAR_COMBINATION_1
+, LINEAR_VERIFY_1
+, POINT_VERIFY_1
+, DECOMPRESS
+
+, BIP0340_VERIFY
+
 , VERSION
 , LOCKTIME
 , INPUTISPEGIN
@@ -258,27 +343,150 @@ static int32_t decodePrimitive(jetName* result, bitstream* stream) {
     bit = getBit(stream);
     if (bit < 0) return bit;
     if (!bit) {
-      int32_t code = getNBits(2, stream);
+      /* Core jets */
+      int32_t code = decodeUptoMaxInt(stream);
       if (code < 0) return code;
 
       switch (code) {
-        case 0x0: return either(result, ADDER32, SUBTRACTOR32, stream);
-        case 0x1: *result = MULTIPLIER32; return 0;
-        case 0x2: return either(result, FULLADDER32, FULLSUBTRACTOR32, stream);
-        case 0x3: *result = FULLMULTIPLIER32; return 0;
-      }
+       case 2: /* Arith jets chapter */
+        code = decodeUptoMaxInt(stream);
+        if (code < 0) return code;
 
-      assert(false);
-      UNREACHABLE;
-    } else {
-      bit = getBit(stream);
-      if (bit < 0) return bit;
-      if (!bit) {
-        *result = SHA256_HASHBLOCK; return 0;
-      } else {
-        fprintf(stderr, "EC jets nodes not yet implemented.\n");
-        return SIMPLICITY_ERR_DATA_OUT_OF_RANGE;
+        switch (code) {
+         case 2: /* FullAdd */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = FULL_ADD_32; return 0;
+          }
+          break;
+         case 3: /* Add */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = ADD_32; return 0;
+          }
+          break;
+         case 7: /* FullSubtract */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = FULL_SUBTRACT_32; return 0;
+          }
+          break;
+         case 8: /* Subtract */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = SUBTRACT_32; return 0;
+          }
+          break;
+         case 12: /* FullMultiply */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = FULL_MULTIPLY_32; return 0;
+          }
+          break;
+         case 13: /* Multiply */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 5: *result = MULTIPLY_32; return 0;
+          }
+          break;
+        }
+        break;
+       case 3: /* Hash jets chapter */
+        code = decodeUptoMaxInt(stream);
+        if (code < 0) return code;
+        switch (code) {
+         case 1: /* SHA-256 section */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 1: *result = SHA_256_BLOCK; return 0;
+          }
+          break;
+        }
+        break;
+       case 4: /* Secp256k1 jets chapter */
+        code = decodeUptoMaxInt(stream);
+        if (code < 0) return code;
+        switch (code) {
+         case 1: /* point-verify */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 1: *result = POINT_VERIFY_1; return 0;
+          }
+          break;
+         case 2: *result = DECOMPRESS; return 0;
+         case 3: /* linear-verify */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 1: *result = LINEAR_VERIFY_1; return 0;
+          }
+          break;
+         case 4: /* linear-combination */
+          code = decodeUptoMaxInt(stream);
+          if (code < 0) return code;
+          switch (code) {
+           case 1: *result = LINEAR_COMBINATION_1; return 0;
+          }
+          break;
+         case 5: *result = SCALE; return 0;
+         case 6: *result = GENERATE; return 0;
+         case 7: *result = GEJ_INFINITY; return 0;
+         case 8: *result = GEJ_NORMALIZE; return 0;
+         case 9: *result = GEJ_NEGATE; return 0;
+         case 10: *result = GE_NEGATE; return 0;
+         case 11: *result = GEJ_DOUBLE; return 0;
+         case 12: *result = GEJ_ADD; return 0;
+         case 13: *result = GEJ_GE_ADD_EX; return 0;
+         case 14: *result = GEJ_GE_ADD; return 0;
+         case 15: *result = GEJ_RESCALE; return 0;
+         case 16: *result = GEJ_IS_INFINITY; return 0;
+
+         case 19: *result = GEJ_X_EQUIV; return 0;
+         case 20: *result = GEJ_Y_IS_ODD; return 0;
+         case 21: *result = GEJ_IS_ON_CURVE; return 0;
+         case 22: *result = GE_IS_ON_CURVE; return 0;
+         case 23: *result = SCALAR_NORMALIZE; return 0;
+         case 24: *result = SCALAR_NEGATE; return 0;
+         case 25: *result = SCALAR_ADD; return 0;
+         case 26: *result = SCALAR_SQUARE; return 0;
+         case 27: *result = SCALAR_MULTIPLY; return 0;
+         case 28: *result = SCALAR_MULTIPLY_LAMBDA; return 0;
+         case 29: *result = SCALAR_INVERT; return 0;
+         case 30: *result = SCALAR_IS_ZERO; return 0;
+
+         case 35: *result = FE_NORMALIZE; return 0;
+         case 36: *result = FE_NEGATE; return 0;
+         case 37: *result = FE_ADD; return 0;
+         case 38: *result = FE_SQUARE; return 0;
+         case 39: *result = FE_MULTIPLY; return 0;
+         case 40: *result = FE_MULTIPLY_BETA; return 0;
+         case 41: *result = FE_INVERT; return 0;
+         case 42: *result = FE_SQUARE_ROOT; return 0;
+         case 43: *result = FE_IS_ZERO; return 0;
+         case 44: *result = FE_IS_ODD; return 0;
+        }
+        break;
+       case 5: /* Signature jets chapter */
+        code = decodeUptoMaxInt(stream);
+        if (code < 0) return code;
+        switch (code) {
+         case 1: *result = BIP0340_VERIFY; return 0;
+        }
+        break;
       }
+      return SIMPLICITY_ERR_DATA_OUT_OF_RANGE;
+
+    } else {
+      /* Elements specific jets go here */
+      return SIMPLICITY_ERR_DATA_OUT_OF_RANGE;
     }
   }
 }
@@ -288,47 +496,281 @@ static int32_t decodePrimitive(jetName* result, bitstream* stream) {
  */
 static once_flag static_initialized = ONCE_FLAG_INIT;
 static dag_node jet_node[] = {
- [ADDER32] =
+ [ADD_32] =
     { .tag = JET
-    , .jet = adder32
+    , .jet = add_32
     , .sourceIx = word64
     , .targetIx = twoTimesWord32
     },
- [SUBTRACTOR32] =
+ [SUBTRACT_32] =
     { .tag = JET
-    , .jet = subtractor32
+    , .jet = subtract_32
     , .sourceIx = word64
     , .targetIx = twoTimesWord32
     },
- [MULTIPLIER32] =
+ [MULTIPLY_32] =
     { .tag = JET
-    , .jet = multiplier32
+    , .jet = multiply_32
     , .sourceIx = word64
     , .targetIx = word64
     },
- [FULLADDER32] =
+ [FULL_ADD_32] =
     { .tag = JET
-    , .jet = fullAdder32
+    , .jet = full_add_32
     , .sourceIx = twoTimesWord64
     , .targetIx = twoTimesWord32
     },
- [FULLSUBTRACTOR32] =
+ [FULL_SUBTRACT_32] =
     { .tag = JET
-    , .jet = fullSubtractor32
+    , .jet = full_subtract_32
     , .sourceIx = twoTimesWord64
     , .targetIx = twoTimesWord32
     },
- [FULLMULTIPLIER32] =
+ [FULL_MULTIPLY_32] =
     { .tag = JET
-    , .jet = fullMultiplier32
+    , .jet = full_multiply_32
     , .sourceIx = word128
     , .targetIx = word64
     },
- [SHA256_HASHBLOCK] =
+ [SHA_256_BLOCK] =
     { .tag = JET
-    , .jet = sha256_hashBlock
+    , .jet = sha_256_block
     , .sourceIx = word256TimesWord512
     , .targetIx = word256
+    },
+ [FE_NORMALIZE] =
+    { .tag = JET
+    , .jet = fe_normalize
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [FE_NEGATE] =
+    { .tag = JET
+    , .jet = fe_negate
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [FE_ADD] =
+    { .tag = JET
+    , .jet = fe_add
+    , .sourceIx = word512
+    , .targetIx = word256
+    },
+ [FE_SQUARE] =
+    { .tag = JET
+    , .jet = fe_square
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [FE_MULTIPLY] =
+    { .tag = JET
+    , .jet = fe_multiply
+    , .sourceIx = word512
+    , .targetIx = word256
+    },
+ [FE_MULTIPLY_BETA] =
+    { .tag = JET
+    , .jet = fe_multiply_beta
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [FE_INVERT] =
+    { .tag = JET
+    , .jet = fe_invert
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [FE_SQUARE_ROOT] =
+    { .tag = JET
+    , .jet = fe_square_root
+    , .sourceIx = word256
+    , .targetIx = sWord256
+    },
+ [FE_IS_ZERO] =
+    { .tag = JET
+    , .jet = fe_is_zero
+    , .sourceIx = word256
+    , .targetIx = two
+    },
+ [FE_IS_ODD] =
+    { .tag = JET
+    , .jet = fe_is_odd
+    , .sourceIx = word256
+    , .targetIx = two
+    },
+ [SCALAR_NORMALIZE] =
+    { .tag = JET
+    , .jet = scalar_normalize
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [SCALAR_NEGATE] =
+    { .tag = JET
+    , .jet = scalar_negate
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [SCALAR_ADD] =
+    { .tag = JET
+    , .jet = scalar_add
+    , .sourceIx = word512
+    , .targetIx = word256
+    },
+ [SCALAR_SQUARE] =
+    { .tag = JET
+    , .jet = scalar_square
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [SCALAR_MULTIPLY] =
+    { .tag = JET
+    , .jet = scalar_multiply
+    , .sourceIx = word512
+    , .targetIx = word256
+    },
+ [SCALAR_MULTIPLY_LAMBDA] =
+    { .tag = JET
+    , .jet = scalar_multiply_lambda
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [SCALAR_INVERT] =
+    { .tag = JET
+    , .jet = scalar_invert
+    , .sourceIx = word256
+    , .targetIx = word256
+    },
+ [SCALAR_IS_ZERO] =
+    { .tag = JET
+    , .jet = scalar_is_zero
+    , .sourceIx = word256
+    , .targetIx = two
+    },
+ [GEJ_INFINITY] =
+    { .tag = JET
+    , .jet = gej_infinity
+    , .sourceIx = one
+    , .targetIx = gej
+    },
+ [GEJ_NORMALIZE] =
+    { .tag = JET
+    , .jet = gej_infinity
+    , .sourceIx = gej
+    , .targetIx = ge
+    },
+ [GEJ_NEGATE] =
+    { .tag = JET
+    , .jet = gej_negate
+    , .sourceIx = gej
+    , .targetIx = gej
+    },
+ [GE_NEGATE] =
+    { .tag = JET
+    , .jet = ge_negate
+    , .sourceIx = ge
+    , .targetIx = ge
+    },
+ [GEJ_DOUBLE] =
+    { .tag = JET
+    , .jet = gej_double
+    , .sourceIx = gej
+    , .targetIx = gej
+    },
+ [GEJ_ADD] =
+    { .tag = JET
+    , .jet = gej_add
+    , .sourceIx = gejTimesGej
+    , .targetIx = gej
+    },
+ [GEJ_GE_ADD_EX] =
+    { .tag = JET
+    , .jet = gej_ge_add_ex
+    , .sourceIx = gejTimesGe
+    , .targetIx = feTimesGej
+    },
+ [GEJ_GE_ADD] =
+    { .tag = JET
+    , .jet = gej_ge_add
+    , .sourceIx = gejTimesGe
+    , .targetIx = gej
+    },
+ [GEJ_RESCALE] =
+    { .tag = JET
+    , .jet = gej_ge_add
+    , .sourceIx = gejTimesFe
+    , .targetIx = gej
+    },
+ [GEJ_IS_INFINITY] =
+    { .tag = JET
+    , .jet = gej_is_infinity
+    , .sourceIx = gej
+    , .targetIx = two
+    },
+ [GEJ_X_EQUIV] =
+    { .tag = JET
+    , .jet = gej_x_equiv
+    , .sourceIx = feTimesGej
+    , .targetIx = two
+    },
+ [GEJ_Y_IS_ODD] =
+    { .tag = JET
+    , .jet = gej_y_is_odd
+    , .sourceIx = gej
+    , .targetIx = two
+    },
+ [GEJ_IS_ON_CURVE] =
+    { .tag = JET
+    , .jet = gej_is_on_curve
+    , .sourceIx = gej
+    , .targetIx = two
+    },
+ [GE_IS_ON_CURVE] =
+    { .tag = JET
+    , .jet = ge_is_on_curve
+    , .sourceIx = ge
+    , .targetIx = two
+    },
+ [GENERATE] =
+    { .tag = JET
+    , .jet = generate
+    , .sourceIx = word256
+    , .targetIx = gej
+    },
+ [SCALE] =
+    { .tag = JET
+    , .jet = scale
+    , .sourceIx = scalarTimesGej
+    , .targetIx = gej
+    },
+ [LINEAR_COMBINATION_1] =
+    { .tag = JET
+    , .jet = linear_combination_1
+    , .sourceIx = scalarTimesGejTimesScalar
+    , .targetIx = gej
+    },
+ [LINEAR_VERIFY_1] =
+    { .tag = JET
+    , .jet = linear_verify_1
+    , .sourceIx = scalarTimesGeTimesScalarTimesGe
+    , .targetIx = one
+    },
+ [POINT_VERIFY_1] =
+    { .tag = JET
+    , .jet = point_verify_1
+    , .sourceIx = scalarTimesPointTimesScalarTimesPoint
+    , .targetIx = one
+    },
+ [DECOMPRESS] =
+    { .tag = JET
+    , .jet = decompress
+    , .sourceIx = point
+    , .targetIx = sWord512
+    },
+ [BIP0340_VERIFY] =
+    { .tag = JET
+    , .jet = bip0340_verify
+    , .sourceIx = word1024
+    , .targetIx = one
     },
  [VERSION] =
     { .tag = JET
@@ -559,13 +1001,52 @@ static void static_initialize(void) {
   } while(0)
 
     /* Jets are identified by their specification's identity Merkle roots. */
-    MK_JET(ADDER32,          0x73b3315bu, 0xdec731edu, 0xb09c5187u, 0x2782249cu, 0x9515e149u, 0x078c0e61u, 0x95b8e546u, 0x532e5584u);
-    MK_JET(FULLADDER32,      0xa20bf848u, 0xb6cd6637u, 0x5469a520u, 0x1f41507bu, 0xf24dadc8u, 0xd5d3aeacu, 0x07c8ddc9u, 0x278e3041u);
-    MK_JET(SUBTRACTOR32,     0x51b9d49cu, 0x79e50235u, 0xb40333a8u, 0xa1d3cf56u, 0x54ff583eu, 0x65109570u, 0xc3d9202bu, 0x5080cd9au);
-    MK_JET(FULLSUBTRACTOR32, 0xbbf14525u, 0xa1bdfa57u, 0x373772c8u, 0xc12202adu, 0x918e43f2u, 0x178f2be7u, 0x33c3c365u, 0x3fd58cedu);
-    MK_JET(MULTIPLIER32,     0xfca03a42u, 0xe8f84210u, 0xb0bebe3fu, 0xbdc10628u, 0x670ba7b2u, 0x96926316u, 0x121131a5u, 0x9375a9d8u);
-    MK_JET(FULLMULTIPLIER32, 0x342e643fu, 0x60a1fc90u, 0xe4488d3du, 0xeea7e9a0u, 0xb6bfabe9u, 0xd0e0e7a8u, 0xc9ce2535u, 0x8a86db87u);
-    MK_JET(SHA256_HASHBLOCK, 0xda10f0e8u, 0x530695d0u, 0x7564f0b3u, 0x2feebe77u, 0x265a1d69u, 0xcf802e22u, 0xd77289dau, 0xf6641b8du);
+    MK_JET(ADD_32,                 0xe40466a7u, 0xecf71ce8u, 0x62fb3c15u, 0x4c1e8f84u, 0x5d7e5707u, 0x463a8945u, 0x37a32fc7u, 0x214900adu);
+    MK_JET(FULL_ADD_32,            0x4727361eu, 0xa003c1a4u, 0x83e57505u, 0xcf5b405au, 0x8227da1au, 0xddc47e2bu, 0x016c2d09u, 0xbe047fe8u);
+    MK_JET(SUBTRACT_32,            0xf76ecad1u, 0xfda50f13u, 0x5bdfe3e5u, 0x33a15009u, 0x8f406261u, 0xc76f6dbfu, 0x6725f1e3u, 0x883c2ae2u);
+    MK_JET(FULL_SUBTRACT_32,       0x6d96f68au, 0x945c22e7u, 0x62115c09u, 0x4297b194u, 0xbedc0ce5u, 0xa0c92db6u, 0x4b830a18u, 0xb44df0d0u);
+    MK_JET(MULTIPLY_32,            0x161fd03au, 0x92c621b3u, 0x289849ffu, 0x29ad8134u, 0x99d63ed9u, 0x73db0e97u, 0x51785421u, 0xf568d18fu);
+    MK_JET(FULL_MULTIPLY_32,       0xaac25361u, 0xe598e354u, 0x38b918b5u, 0x8fd2cef4u, 0xdb3c5d8cu, 0x5e63aa4fu, 0x25e9cec0u, 0xcfd9dfb1u);
+    MK_JET(SHA_256_BLOCK,          0xdfc927d3u, 0x9bf7147au, 0x8b0a7f43u, 0x79466870u, 0x824db102u, 0x090a0036u, 0x2923a377u, 0xa91af681u);
+    MK_JET(FE_NORMALIZE,           0xc070adbau, 0xab2c7be6u, 0xff577a75u, 0x07aff0e7u, 0x7657f309u, 0xe65d05fau, 0x23c19276u, 0xf73852ebu);
+    MK_JET(FE_NEGATE,              0x8766585du, 0x27d18863u, 0x42714443u, 0x2ba483b3u, 0x6cd2dd1fu, 0x36181410u, 0xacc71493u, 0x9c0cb56au);
+    MK_JET(FE_ADD,                 0xc09d58e3u, 0x8dc4ce1au, 0xcc09dae8u, 0xa5881908u, 0xfe1ebc7fu, 0x1fc742c6u, 0x1cdc8493u, 0xf233b94au);
+    MK_JET(FE_SQUARE,              0x8e77cc8cu, 0x63693a2au, 0xcd9a6526u, 0x6a028906u, 0xf864214au, 0xf66ba54cu, 0xce11acb0u, 0x37c94393u);
+    MK_JET(FE_MULTIPLY,            0xac5a3626u, 0xb5fc2b5au, 0x206ac18fu, 0x1b0f9ecau, 0xcb5c6314u, 0xc4efda59u, 0xe0fad3a1u, 0xb599a1bdu);
+    MK_JET(FE_MULTIPLY_BETA,       0xe7a698e2u, 0x5ebbf70fu, 0x8ced3130u, 0xac04d674u, 0xa9da39e0u, 0x61761bfdu, 0x9d87d794u, 0x898f8a7au);
+    MK_JET(FE_INVERT,              0xb6b11bd6u, 0x0258d326u, 0xb19b6f78u, 0x387ff3aau, 0xbf6a4c41u, 0x9d0c5a8du, 0xda6b4405u, 0x0bc6e9d5u);
+    MK_JET(FE_SQUARE_ROOT,         0xf7718103u, 0x304cb436u, 0x96bdf92fu, 0x614c838du, 0x24d7dd7bu, 0xa8dc01abu, 0x5c6a7726u, 0x3c15f729u);
+    MK_JET(FE_IS_ZERO,             0x52359f07u, 0xed7a7c97u, 0x0e947dc8u, 0xc4994056u, 0x6c1a1e09u, 0x5d03604au, 0xfdb4433du, 0xa13a87ecu);
+    MK_JET(FE_IS_ODD,              0x4d21e4b5u, 0x476fcf56u, 0xa369e5a1u, 0x89c486e0u, 0x987f9332u, 0xaaf4c0a7u, 0x5ac3af09u, 0xf81b1709u);
+    MK_JET(SCALAR_NORMALIZE,       0x90e02578u, 0x96990ba6u, 0xf0b07654u, 0x2919cd06u, 0x4ac08b27u, 0x7fae3479u, 0xe40918ebu, 0x6f5b07d8u);
+    MK_JET(SCALAR_NEGATE,          0x6a976a67u, 0x68bd728fu, 0xe2105185u, 0x1c60eb25u, 0x72e5d06cu, 0x95566dfau, 0xe92820c8u, 0x424aaa4eu);
+    MK_JET(SCALAR_ADD,             0x67e41fadu, 0x704500ceu, 0x97509132u, 0xd4f69734u, 0x2e8583edu, 0x7e9f7bedu, 0xb995d36cu, 0xf65ff32eu);
+    MK_JET(SCALAR_SQUARE,          0xd636b49du, 0xc6b2266cu, 0xcecb7bc0u, 0x4168823bu, 0x2a5d7a1du, 0x2ac343dau, 0x605419d3u, 0x8dfdfde0u);
+    MK_JET(SCALAR_MULTIPLY,        0x14513cf4u, 0x41179e62u, 0xfb4293bbu, 0x353ee5bfu, 0x01eddf8du, 0x81ce0310u, 0x062f09a8u, 0x1d2fbca8u);
+    MK_JET(SCALAR_MULTIPLY_LAMBDA, 0xf62400f5u, 0xbe7400a7u, 0x12e74a1du, 0xc1a841e6u, 0x024a9618u, 0x551c3364u, 0xc4e8156du, 0x1cdded83u);
+    MK_JET(SCALAR_INVERT,          0xc0e2ad1bu, 0xa6bfd910u, 0x4424f594u, 0xd0073ea1u, 0x99405e5cu, 0xa5b71283u, 0x94b613b9u, 0xe1bd36fcu);
+    MK_JET(SCALAR_IS_ZERO,         0x38a457cau, 0xb1c30c51u, 0x4e20e241u, 0xd5846540u, 0x75ec4d05u, 0x496c7e0bu, 0x1ce2de5eu, 0x2fc19916u);
+    MK_JET(GEJ_INFINITY,           0x2d9d36b4u, 0x6ead02dbu, 0x63b585dcu, 0xa67e5e4du, 0xcb940589u, 0xbb133c99u, 0x100d617cu, 0x27126e96u);
+    MK_JET(GEJ_NORMALIZE,          0x1db135d0u, 0xe05b9976u, 0x87ac853cu, 0xf78b95cfu, 0x07418f5fu, 0xc9164ed8u, 0xd6a7f3edu, 0x70efabe5u);
+    MK_JET(GEJ_NEGATE,             0x71eeffb5u, 0xb637af51u, 0xc4978002u, 0xc212cdafu, 0x396cf8efu, 0xca33aab0u, 0xf833f81au, 0x9fb6a989u);
+    MK_JET(GE_NEGATE,              0xa497e71cu, 0x403c4ce2u, 0xb781893cu, 0xd69a5285u, 0xea02d7b7u, 0xfe8edfacu, 0xe78a205au, 0xad2ec033u);
+    MK_JET(GEJ_DOUBLE,             0x80d0825du, 0x57ce424cu, 0xc8b89dc2u, 0x510d7e65u, 0x858a994eu, 0x8e987623u, 0xd10e3483u, 0xde26df9eu);
+    MK_JET(GEJ_ADD,                0x8075b590u, 0x28649087u, 0xded0e766u, 0x6e1a0051u, 0x4509d0c9u, 0x87d88d18u, 0x681ac89bu, 0xc960eb25u);
+    MK_JET(GEJ_GE_ADD_EX,          0x4a8902b1u, 0x1d739b4fu, 0xb848d185u, 0x28736ab1u, 0xd668be2eu, 0xab1fed8du, 0x068365b5u, 0x3bd77d88u);
+    MK_JET(GEJ_GE_ADD,             0xddc12bb2u, 0x89175ff5u, 0x87a570b3u, 0x02af6108u, 0xfa565bcau, 0xce9c374au, 0x10b78363u, 0x951daa64u);
+    MK_JET(GEJ_RESCALE,            0xfa70aa15u, 0x3dab6bc9u, 0x9355c10cu, 0x61e5bfcfu, 0xa397b381u, 0xf7ef5915u, 0x9d83791au, 0x2a6a5824u);
+    MK_JET(GEJ_IS_INFINITY,        0xe186f9bdu, 0xbe4916c7u, 0x2f6c3bc2u, 0xadf3e047u, 0x22ef4cecu, 0x297253e3u, 0xecaa4e4cu, 0xc551ef2cu);
+    MK_JET(GEJ_X_EQUIV,            0x65a860fau, 0x7e74601cu, 0xb6d83755u, 0x3ba19d60u, 0xc4773c1cu, 0x12b4b0f0u, 0x278b45fbu, 0x23fce967u);
+    MK_JET(GEJ_Y_IS_ODD,           0xadbcf2d2u, 0xe9155854u, 0x54bc7262u, 0x0f1e66f5u, 0x9ca726e8u, 0x24860e1eu, 0x04bbe2bcu, 0xa2a49a11u);
+    MK_JET(GEJ_IS_ON_CURVE,        0xa8c82e8bu, 0x3a6199dau, 0x25b2b19cu, 0xd149f9ffu, 0x4c3fdc0bu, 0x00b26480u, 0xc0006553u, 0xd43c1f6eu);
+    MK_JET(GE_IS_ON_CURVE,         0xd9aa6606u, 0x5cb0ed2cu, 0x7168609du, 0xfd62ab64u, 0x3aa87c27u, 0xe0dbbf96u, 0xf2914528u, 0xfeef52c5u);
+    MK_JET(GENERATE,               0x5136b9e1u, 0x4b280ab4u, 0x43ef8013u, 0x0e6acf63u, 0xc7b0066cu, 0x880ea699u, 0x1f4971f9u, 0xeb9e250cu);
+    MK_JET(SCALE,                  0xa89f2191u, 0xec6ad8ebu, 0xd292adf0u, 0x623d0fb5u, 0x233ea1b1u, 0x038a1354u, 0x300fe58cu, 0x4a365972u);
+    MK_JET(LINEAR_COMBINATION_1,   0x3fa1c2d8u, 0xc971e239u, 0x85fd9591u, 0x201206d4u, 0x6abdc087u, 0x9107e2b9u, 0x760438b6u, 0x093a09a5u);
+    MK_JET(LINEAR_VERIFY_1,        0x2a69879au, 0xce3c7debu, 0xa2fdc206u, 0x69b85441u, 0x5ee0b550u, 0x617c37f6u, 0xede4ca57u, 0x37045b94u);
+    MK_JET(POINT_VERIFY_1,         0x7ca92d09u, 0x2b44eb81u, 0xcce82137u, 0x37120369u, 0x3088bfb0u, 0x8122d0d6u, 0xa977d00bu, 0xe17cf4f4u);
+    MK_JET(DECOMPRESS,             0xab5a2dbcu, 0x0f2c8208u, 0x6d2d46bbu, 0xa5691f13u, 0x12bacc94u, 0x6b08effbu, 0xe7f85151u, 0x141f7dcfu);
+    MK_JET(BIP0340_VERIFY,         0x67619fe7u, 0x77a22a0fu, 0xb6d227a6u, 0x922a843bu, 0xf832286bu, 0xd5c621c1u, 0xc52f1d64u, 0x689beae5u);
 #undef MK_JET
 
   }
